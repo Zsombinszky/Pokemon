@@ -1,9 +1,9 @@
 import React from "react";
 
-const PlayerTeam = ({ name, img, hp, attack, def }) => {
+const PlayerTeam = ({ name, img, hp, attack, def, handleSelectPokemon}) => {
   return (
     <>
-      <div>
+      <div className="poke" onClick={handleSelectPokemon}>
         <h1>
           <label>Name: </label>
           {name}
@@ -20,8 +20,6 @@ const PlayerTeam = ({ name, img, hp, attack, def }) => {
           <label>Defense: </label>
           {def}
         </p>
-      </div>
-      <div>
         <img src={img} alt={`${name} picture`} />
       </div>
     </>

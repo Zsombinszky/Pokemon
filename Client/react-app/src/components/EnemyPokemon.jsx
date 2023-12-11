@@ -4,7 +4,7 @@ const EnemyPokemon = ({ name, img, hp, attack, def }) => {
   return (
     <>
       <div>
-        <h1><label>Wild pokemon: </label>{name}</h1>
+        <h1><label>Wild {name} appeared! </label></h1>
         <p><label>Hp: </label>{hp}</p>
         <p><label>Attack: </label>{attack}</p>
         <p><label>Defense: </label>{def}</p>

@@ -1,16 +1,21 @@
-import React from "react";
 import Location from "./components/Location";
 import { useEffect } from "react";
 import { useState } from "react";
 import EnemyPokemon from "./components/EnemyPokemon";
+import PlayerTeam from "./components/PlayerTeam";
+import "./App.css";
 
 function App() {
   const [data, setData] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [playerPokemonStats, setPlayerPokemonStats] = useState([]);
+  const [selectedPlayerPokemon, setSelectedPlayerPokemon] = useState(false);
 
-  const playerPokemons = [
-    
-  ]
+  const usersPokemon = [
+    "https://pokeapi.co/api/v2/pokemon/mew",
+    "https://pokeapi.co/api/v2/pokemon/lugia",
+    "https://pokeapi.co/api/v2/pokemon/scyther"
+]
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,12 +23,23 @@ function App() {
         const response = await fetch("https://pokeapi.co/api/v2/location");
         const jsonData = await response.json();
         setData(jsonData.results);
+
+        const fetchPromises = usersPokemon.map(async (pokemonUrl) => {
+          const response1 = await fetch(pokemonUrl);
+          return response1.json();
+        });
+
+        const pokemonStats = await Promise.all(fetchPromises);
+        setPlayerPokemonStats(pokemonStats);
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
   }, []);
+
+
 
   const handleLocationClick = async (locationKey) => {
     try {
@@ -50,10 +66,20 @@ function App() {
     setSelectedLocation(null);
   };
 
+
+function handleSelectPokemon (pokemon) {
+  
+  console.log(pokemon)
+  setSelectedPlayerPokemon(true)
+
+}
+
+
   return (
     <div className="App">
       <h1>{selectedLocation ? "" : "Locations"}</h1>
       {selectedLocation ? (
+        <>
         <div>
           <EnemyPokemon
             key={1}
@@ -62,11 +88,25 @@ function App() {
             hp={selectedLocation.stats[0].base_stat}
             attack={selectedLocation.stats[1].base_stat}
             def={selectedLocation.stats[2].base_stat}
-          />
+            />
           <button onClick={handleBackClick}>Back</button>
           {/* {<h2>{selectedLocation.name}</h2>} */}
           {/* <pre>{JSON.stringify(selectedLocation, null, 2)}</pre> */}
         </div>
+        <div className="mypokemon">
+        {playerPokemonStats.map((pokemon, index) => (
+          <PlayerTeam
+          key={index + 1}
+          name={pokemon.name}
+          img={pokemon.sprites.front_default}
+          hp={pokemon.stats[0].base_stat}
+          attack={pokemon.stats[1].base_stat}
+          def={pokemon.stats[2].base_stat}
+          handleSelectPokemon={() => handleSelectPokemon(pokemon)}
+          />
+        ))}
+        </div>
+            </>
       ) : (
         <ul>
           {data.map((location, index) => (
