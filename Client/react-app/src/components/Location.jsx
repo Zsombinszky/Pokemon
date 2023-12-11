@@ -1,7 +1,11 @@
 import React from "react";
 
-const Location = (props) => {
-  return <li>{props.name}</li>;
+const Location = ({ name, onClick }) => {
+  return (
+    <li>
+      <button onClick={onClick}>{name}</button>
+    </li>
+  );
 };
 
 export default Location;
