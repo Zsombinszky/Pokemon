@@ -6,7 +6,7 @@ const Encounter = ({ enemyname, enemyimg, enemyhp, enemyattack, enemydef, name, 
             <div>Encounter</div>
             <div>
                 <div><label>Wild pokemon</label>
-                    {enemyimg}
+                    <img src={enemyimg} alt={`${enemyname} picture`} />
                 </div>
                 <div>
                     <p>{enemyname}</p>
@@ -16,18 +16,13 @@ const Encounter = ({ enemyname, enemyimg, enemyhp, enemyattack, enemydef, name, 
                 </div>
             </div>
             <div>
-            </div>
-            <div>
-                {img}
+                <img src={img} alt={`${name} picture`} />
             </div>
             <div><label htmlFor="My pokemon"></label>
                 <p>{name}</p>
                 <p><label>Hp: </label>{hp}</p>
                 <p><label>Attack: </label>{attack}</p>
                 <p><label>Defense: </label>{def}</p>
-            </div>
-            <div>
-            <button /* onClick={} */>Attack</button>
             </div>
         </>
     )
