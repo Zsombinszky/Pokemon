@@ -72,7 +72,7 @@ function App() {
 
     console.log(pokemon)
     setSelectedPlayerPokemon(pokemon)
-   
+    
 
   }
 
@@ -110,7 +110,25 @@ function App() {
               />
             ))}
           </div>
-      
+          {selectedPlayerPokemon ? (
+            
+        <Encounter
+          key={1}
+          enemyname={selectedLocation.name}
+          enemyimg={selectedLocation.sprites.front_default}
+          enemyhp={selectedLocation.stats[0].base_stat}
+          enemyattack={selectedLocation.stats[1].base_stat}
+          enemydef={selectedLocation.stats[2].base_stat}
+          name={selectedPlayerPokemon.name}
+          img={selectedPlayerPokemon.sprites.front_default}
+          hp={selectedPlayerPokemon.stats[0].base_stat}
+          attack={selectedPlayerPokemon.stats[1].base_stat}
+          def={selectedPlayerPokemon.stats[2].base_stat}
+        />
+
+      ) : (<>
+
+      </>)}
         </>
 
 
