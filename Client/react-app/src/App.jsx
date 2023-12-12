@@ -4,6 +4,8 @@ import { useState } from "react";
 import EnemyPokemon from "./components/EnemyPokemon";
 import PlayerTeam from "./components/PlayerTeam";
 import Encounter from "./components/Encounter";
+import Buttons from "./components/Buttons";
+import ButtonAnnouncer from "./components/ButtonAnnouncer";
 import "./App.css";
 
 function App() {
@@ -11,12 +13,13 @@ function App() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [playerPokemonStats, setPlayerPokemonStats] = useState([]);
   const [selectedPlayerPokemon, setSelectedPlayerPokemon] = useState(false);
+  const [isPokemonSelected, setIsPokemonSelected] = useState(false);
 
   const usersPokemon = [
     "https://pokeapi.co/api/v2/pokemon/mew",
     "https://pokeapi.co/api/v2/pokemon/lugia",
-    "https://pokeapi.co/api/v2/pokemon/scyther"
-  ]
+    "https://pokeapi.co/api/v2/pokemon/scyther",
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,15 +35,12 @@ function App() {
 
         const pokemonStats = await Promise.all(fetchPromises);
         setPlayerPokemonStats(pokemonStats);
-
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
   }, []);
-
-
 
   const handleLocationClick = async (locationKey) => {
     try {
@@ -63,75 +63,76 @@ function App() {
     }
   };
 
+const handleFlee = () => {
+  setSelectedLocation(null);
+  setIsPokemonSelected(false);
+}
+
+  const handleAttack = () => {
+    
+  };
+
   const handleBackClick = () => {
     setSelectedLocation(null);
   };
 
-
   function handleSelectPokemon(pokemon) {
-
-    console.log(pokemon)
-    setSelectedPlayerPokemon(pokemon)
-    
-
+    setSelectedPlayerPokemon(pokemon);
+    setIsPokemonSelected(true);
   }
-
 
   return (
     <div className="App">
-      
       <h1>{selectedLocation ? "" : "Locations"}</h1>
-      
       {selectedLocation ? (
-        <>
-          <div>
-            <EnemyPokemon
+        isPokemonSelected ? (
+          <>
+            <Encounter
               key={1}
-              name={selectedLocation.name}
-              img={selectedLocation.sprites.front_default}
-              hp={selectedLocation.stats[0].base_stat}
-              attack={selectedLocation.stats[1].base_stat}
-              def={selectedLocation.stats[2].base_stat}
+              enemyname={selectedLocation.name}
+              enemyimg={selectedLocation.sprites.front_default}
+              enemyhp={selectedLocation.stats[0].base_stat}
+              enemyattack={selectedLocation.stats[1].base_stat}
+              enemydef={selectedLocation.stats[2].base_stat}
+              name={selectedPlayerPokemon.name}
+              img={selectedPlayerPokemon.sprites.back_default}
+              hp={selectedPlayerPokemon.stats[0].base_stat}
+              attack={selectedPlayerPokemon.stats[1].base_stat}
+              def={selectedPlayerPokemon.stats[2].base_stat}
             />
-            <button onClick={handleBackClick}>Back</button>
-            {/* {<h2>{selectedLocation.name}</h2>} */}
-            {/* <pre>{JSON.stringify(selectedLocation, null, 2)}</pre> */}
-          </div>
-          <div className="mypokemon">
-            {playerPokemonStats.map((pokemon, index) => (
-              <PlayerTeam
-                key={index + 1}
-                name={pokemon.name}
-                img={pokemon.sprites.front_default}
-                hp={pokemon.stats[0].base_stat}
-                attack={pokemon.stats[1].base_stat}
-                def={pokemon.stats[2].base_stat}
-                handleSelectPokemon={() => handleSelectPokemon(pokemon)}
+            <Buttons 
+            handleFlee={handleFlee}
+            />
+          </>
+        ) : (
+          <>
+            <div>
+              <EnemyPokemon
+                key={1}
+                name={selectedLocation.name}
+                img={selectedLocation.sprites.front_default}
+                hp={selectedLocation.stats[0].base_stat}
+                attack={selectedLocation.stats[1].base_stat}
+                def={selectedLocation.stats[2].base_stat}
               />
-            ))}
-          </div>
-          {selectedPlayerPokemon ? (
-            
-        <Encounter
-          key={1}
-          enemyname={selectedLocation.name}
-          enemyimg={selectedLocation.sprites.front_default}
-          enemyhp={selectedLocation.stats[0].base_stat}
-          enemyattack={selectedLocation.stats[1].base_stat}
-          enemydef={selectedLocation.stats[2].base_stat}
-          name={selectedPlayerPokemon.name}
-          img={selectedPlayerPokemon.sprites.front_default}
-          hp={selectedPlayerPokemon.stats[0].base_stat}
-          attack={selectedPlayerPokemon.stats[1].base_stat}
-          def={selectedPlayerPokemon.stats[2].base_stat}
-        />
-
-      ) : (<>
-
-      </>)}
-        </>
-
-
+              <button onClick={handleBackClick}>Back</button>
+            </div>
+  
+            <div className="mypokemon">
+              {playerPokemonStats.map((pokemon, index) => (
+                <PlayerTeam
+                  key={index + 1}
+                  name={pokemon.name}
+                  img={pokemon.sprites.front_default}
+                  hp={pokemon.stats[0].base_stat}
+                  attack={pokemon.stats[1].base_stat}
+                  def={pokemon.stats[2].base_stat}
+                  handleSelectPokemon={() => handleSelectPokemon(pokemon)}
+                />
+              ))}
+            </div>
+          </>
+        )
       ) : (
         <ul>
           {data.map((location, index) => (
@@ -143,7 +144,6 @@ function App() {
           ))}
         </ul>
       )}
-      
     </div>
   );
 }
