@@ -14,9 +14,11 @@ function App() {
   const [playerPokemonStats, setPlayerPokemonStats] = useState([]);
   const [selectedPlayerPokemon, setSelectedPlayerPokemon] = useState(false);
   const [isPokemonSelected, setIsPokemonSelected] = useState(false);
+  const [myHP, setMyHP] = useState(null);
+  const [wildHP, setWildHP] = useState(null)
 
   const usersPokemon = [
-    "https://pokeapi.co/api/v2/pokemon/mew",
+    "https://pokeapi.co/api/v2/pokemon/grookey",
     "https://pokeapi.co/api/v2/pokemon/lugia",
     "https://pokeapi.co/api/v2/pokemon/scyther",
   ];
@@ -27,6 +29,7 @@ function App() {
         const response = await fetch("https://pokeapi.co/api/v2/location");
         const jsonData = await response.json();
         setData(jsonData.results);
+        
 
         const fetchPromises = usersPokemon.map(async (pokemonUrl) => {
           const response1 = await fetch(pokemonUrl);
@@ -58,19 +61,38 @@ function App() {
       const pokemonResponse = await fetch(randomPokemon.url);
       const pokemonData = await pokemonResponse.json();
       setSelectedLocation(pokemonData);
+      console.log(pokemonData)
+      setWildHP(pokemonData.stats[0].base_stat)
     } catch (error) {
       console.error("Error fetching location data:", error);
     }
   };
 
-const handleFlee = () => {
-  setSelectedLocation(null);
-  setIsPokemonSelected(false);
-}
+  const handleFlee = () => {
+    setSelectedLocation(null);
+    setIsPokemonSelected(false);
+  }
 
   const handleAttack = () => {
+    //((((2/5+2)*B*60/D)/50)+2)*Z/255 B attacker attack, D defending pokemon def
+    const randomNumber = Math.floor(Math.random() * (255 - 217 + 1)) + 217;
+
+    const myAttack = selectedPlayerPokemon.stats[1].base_stat;
+    const wildDefense = selectedLocation.stats[2].base_stat;
+    const wildHPLocal = wildHP; 
     
-  };
+    const myTurn = wildHPLocal - Math.abs(Math.floor(((((2 / 5 + 2) * myAttack * 60 / wildDefense) / 50) + 2) * randomNumber / 255));
+
+    const wildAttack = selectedLocation.stats[1].base_stat;
+    const myDefense = selectedPlayerPokemon.stats[2].base_stat;
+    const myHPLocal = myHP;
+
+    const wildTurn = myHPLocal - Math.abs(Math.floor(((((2 / 5 + 2) * wildAttack * 60 / myDefense) / 50) + 2) * randomNumber / 255));
+
+    setMyHP(wildTurn)
+    setWildHP(myTurn)
+
+  }; 
 
   const handleBackClick = () => {
     setSelectedLocation(null);
@@ -79,6 +101,7 @@ const handleFlee = () => {
   function handleSelectPokemon(pokemon) {
     setSelectedPlayerPokemon(pokemon);
     setIsPokemonSelected(true);
+    setMyHP(pokemon.stats[0].base_stat)
   }
 
   return (
@@ -91,17 +114,18 @@ const handleFlee = () => {
               key={1}
               enemyname={selectedLocation.name}
               enemyimg={selectedLocation.sprites.front_default}
-              enemyhp={selectedLocation.stats[0].base_stat}
+              enemyhp={wildHP}
               enemyattack={selectedLocation.stats[1].base_stat}
               enemydef={selectedLocation.stats[2].base_stat}
               name={selectedPlayerPokemon.name}
               img={selectedPlayerPokemon.sprites.back_default}
-              hp={selectedPlayerPokemon.stats[0].base_stat}
+              hp={myHP}
               attack={selectedPlayerPokemon.stats[1].base_stat}
               def={selectedPlayerPokemon.stats[2].base_stat}
             />
-            <Buttons 
-            handleFlee={handleFlee}
+            <Buttons
+              handleFlee={handleFlee}
+              handleAttack={handleAttack}
             />
           </>
         ) : (
@@ -117,7 +141,7 @@ const handleFlee = () => {
               />
               <button onClick={handleBackClick}>Back</button>
             </div>
-  
+
             <div className="mypokemon">
               {playerPokemonStats.map((pokemon, index) => (
                 <PlayerTeam
