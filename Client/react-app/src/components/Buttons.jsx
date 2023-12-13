@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const Buttons = ({ handleFlee, handleAttack }) => {
   return (
@@ -7,6 +7,6 @@ const Buttons = ({ handleFlee, handleAttack }) => {
       <button onClick={handleAttack}>Attack</button>
     </>
   );
-}
+};
 
 export default Buttons;
