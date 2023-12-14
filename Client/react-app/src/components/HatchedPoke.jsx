@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 const HatchedPoke = ({name, img, goBack}) => {
   return (
