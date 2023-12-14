@@ -3,7 +3,7 @@ import React from "react";
 const Location = ({ name, onClick }) => {
   return (
     <li>
-      <button onClick={onClick}>{name}</button>
+      <button className="locations" onClick={onClick}>{name}</button>
     </li>
   );
 };

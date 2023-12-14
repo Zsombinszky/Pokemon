@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Location from "./components/Location";
 import EnemyPokemon from "./components/EnemyPokemon";
 import PlayerTeam from "./components/PlayerTeam";
@@ -39,34 +39,48 @@ function App() {
   const [myHP, setMyHP] = useState(null);
   const [wildHP, setWildHP] = useState(null);
   const [announcerMessage, setAnnouncerMessage] = useState("");
-  const [announcerTypedMessage, setAnnouncerTypedMessage] = useState("");
-  const [maxplayerpokemonhp , setmaxplayerpokemonhp] = useState(null);
-  const [maxwildpokemonhp , setmaxwildpokemonhp] = useState(null);
+  const [maxplayerpokemonhp, setmaxplayerpokemonhp] = useState(null);
+  const [maxwildpokemonhp, setmaxwildpokemonhp] = useState(null);
+  const playerPokePicRef = useRef(null);
+
+  const [backgroundImages, setBackgroundImages] = useState([
+    "url('/pictures/background1.jpg')",
+    "url('/pictures/background2.jpg')",
+    "url('/pictures/background3.jpg')",
+    "url('/pictures/background4.jpg')",
+    "url('/pictures/background5.jpg')",
+    "url('/pictures/background6.jpg')",
+    "url('/pictures/background7.jpg')",
+  ]);
+  const [selectedBackground, setSelectedBackground] = useState("");
 
   const usersPokemon = [
-    "https://pokeapi.co/api/v2/pokemon/grookey",
-    "https://pokeapi.co/api/v2/pokemon/lugia",
-    "https://pokeapi.co/api/v2/pokemon/scyther",
+    "https://pokeapi.co/api/v2/pokemon/reshiram",
+    "https://pokeapi.co/api/v2/pokemon/victini",
+    "https://pokeapi.co/api/v2/pokemon/samurott",
   ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch data
         const response = await fetch("https://pokeapi.co/api/v2/location");
         const jsonData = await response.json();
         setData(jsonData.results);
-
+  
+        // Fetch Pokemon stats
         const fetchPromises = usersPokemon.map(async (pokemonUrl) => {
           const response1 = await fetch(pokemonUrl);
           return response1.json();
         });
-
+  
         const pokemonStats = await Promise.all(fetchPromises);
         setPlayerPokemonStats(pokemonStats);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
+  
     fetchData();
   }, []);
 
@@ -88,35 +102,45 @@ function App() {
       setSelectedLocation(pokemonData);
       console.log(pokemonData);
       setWildHP(pokemonData.stats[0].base_stat);
-     /*  setmaxwildpokemonhp(pokemonData.stats[0].base_stat); */
+      setmaxwildpokemonhp(pokemonData.stats[0].base_stat);
     } catch (error) {
       console.error("Error fetching location data:", error);
     }
   };
 
+const menuBackground = () =>{
+  document.body.style.background = "url('/pictures/menubackground.jpg')";
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundAttachment = 'fixed';
+}
+
   const handleFlee = () => {
     setSelectedLocation(null);
     setIsPokemonSelected(false);
+    menuBackground()
+    setAnnouncerMessage("Please select a Location to encounter a random wild pokemon!");
   };
-
+  
   const handleAttack = () => {
     //((((2/5+2)*B*60/D)/50)+2)*Z/255 B attacker attack, D defending pokemon def
     const randomNumber = Math.floor(Math.random() * (255 - 217 + 1)) + 217;
-
+    
     const myAttack = selectedPlayerPokemon.stats[1].base_stat;
     const wildDefense = selectedLocation.stats[2].base_stat;
     const wildHPLocal = wildHP;
-
+    
     const myTurn =
-      wildHPLocal -
-      Math.abs(
-        Math.floor(
-          ((((2 / 5 + 2) * myAttack * 60) / wildDefense / 50 + 2) *
-            randomNumber) /
-            255
+    wildHPLocal -
+    Math.abs(
+      Math.floor(
+        ((((2 / 5 + 2) * myAttack * 60) / wildDefense / 50 + 2) *
+        randomNumber) /
+        255
         )
-      );
-
+        );
+        
     const wildAttack = selectedLocation.stats[1].base_stat;
     const myDefense = selectedPlayerPokemon.stats[2].base_stat;
     const myHPLocal = myHP;
@@ -130,40 +154,60 @@ function App() {
             255
         )
       );
-
-    setMyHP(wildTurn);
-    setWildHP(myTurn);
+      setMyHP(wildTurn);
+      setWildHP(myTurn);
   };
 
   const handleBackClick = () => {
     setSelectedLocation(null);
+    menuBackground()
   };
 
   function handleSelectPokemon(pokemon) {
     setSelectedPlayerPokemon(pokemon);
     setIsPokemonSelected(true);
     setMyHP(pokemon.stats[0].base_stat);
-    /* setmaxplayerpokemonhp(pokemon.stats[0].base_stat); */
-  }
+    setmaxplayerpokemonhp(pokemon.stats[0].base_stat);
 
-  const typedMessage = useTypedMessage(announcerMessage);
+    const randomBackground =
+      backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+    setSelectedBackground(randomBackground);
+    console.log(randomBackground);
+    setAnnouncerMessage(`Wild ${selectedLocation.name.toUpperCase()} appeared and the Battle Started!!!`);
+
+setTimeout(() => {
+  setAnnouncerMessage(`What will ${pokemon.name.toUpperCase()} do??`);
+}, 3500);
+
+    document.body.style.background = randomBackground ;
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundSize = 'cover';
+  }
 
   return (
     <div className="App">
-      <h1>{selectedLocation ? "" : "Locations"}</h1>
+      <h1 className="locationtext">{selectedLocation ? "" : "Locations"}</h1>
       {selectedLocation ? (
         isPokemonSelected ? (
           <>
             <Encounter
               key={1}
               enemyname={selectedLocation.name}
-              enemyimg={selectedLocation.sprites.front_default}
+              enemyimg={
+                selectedLocation.sprites.versions["generation-v"]["black-white"]
+                  .animated.front_default
+              }
               enemyhp={wildHP}
               maxenemyhp={maxwildpokemonhp}
               enemyattack={selectedLocation.stats[1].base_stat}
               enemydef={selectedLocation.stats[2].base_stat}
               name={selectedPlayerPokemon.name}
-              img={selectedPlayerPokemon.sprites.back_default}
+              img={
+                selectedPlayerPokemon.sprites.versions["generation-v"][
+                  "black-white"
+                ].animated.back_default
+              }
               hp={myHP}
               maxplayerhp={maxplayerpokemonhp}
               attack={selectedPlayerPokemon.stats[1].base_stat}
@@ -176,22 +220,23 @@ function App() {
                   announcerMessage ||
                   `What will ${selectedPlayerPokemon.name} do?`
                 }
-                typedMessage={typedMessage}
+                context="encounter"
               />
             </div>
           </>
         ) : (
           <>
-            <div>
+            <div className="pokemoncontainer">
               <EnemyPokemon
                 key={1}
                 name={selectedLocation.name}
-                img={selectedLocation.sprites.front_default}
+                img={selectedLocation.sprites.versions["generation-v"]["black-white"]
+                .animated.front_default}
                 hp={selectedLocation.stats[0].base_stat}
                 attack={selectedLocation.stats[1].base_stat}
                 def={selectedLocation.stats[2].base_stat}
               />
-              <button onClick={handleBackClick}>Back</button>
+              <button className="backbutton" onClick={handleBackClick}>Back</button>
             </div>
 
             <div className="mypokemon">
@@ -211,6 +256,13 @@ function App() {
         )
       ) : (
         <ul>
+          <BattleAnnouncer
+                message={
+                  announcerMessage ||
+                  `Please select a Location to encounter a random wild pokemon!`
+                }
+                context="location"
+              />
           {data.map((location, index) => (
             <Location
               key={index + 1}

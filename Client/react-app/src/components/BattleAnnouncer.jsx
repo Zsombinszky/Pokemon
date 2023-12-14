@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 
-const BattleAnnouncer = ({ message }) => {
+const BattleAnnouncer = ({ message, context }) => {
   const [typedMessage, setTypedMessage] = useState("");
 
   useEffect(() => {
@@ -22,8 +22,18 @@ const BattleAnnouncer = ({ message }) => {
       setTimeout(resolve, ms);
     });
 
+    const determineStyle = () => {
+      if (context === "location") {
+        return styles.main;
+      } else if (context === "encounter") {
+        return styles._main_1000y_1;
+      } else {
+        return "";
+      }
+    };
+
   return (
-    <div className={styles.main}>
+    <div className={determineStyle()}>
       <div className={styles.message}>{typedMessage}</div>
     </div>
   );
