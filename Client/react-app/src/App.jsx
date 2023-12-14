@@ -79,7 +79,7 @@ function App() {
 
     const myAttack = selectedPlayerPokemon.stats[1].base_stat;
     const wildDefense = selectedLocation.stats[2].base_stat;
-    const wildHPLocal = wildHP; 
+    const wildHPLocal = wildHP;
     
     const myTurn = wildHPLocal - Math.abs(Math.floor(((((2 / 5 + 2) * myAttack * 60 / wildDefense) / 50) + 2) * randomNumber / 255));
 
