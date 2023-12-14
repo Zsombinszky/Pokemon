@@ -11,21 +11,24 @@ const Encounter = ({
   hp,
   attack,
   def,
+  maxplayerhp,
+  maxenemyhp,
 }) => {
   return (
     <>
-      <div>Encounter</div>
+      <div></div>
       <div>
-        <div>
-          <label>Wild pokemon</label>
-          <img src={enemyimg} alt={`${enemyname} picture`} />
+        <div className="enemypokepic">
+          <img className="enemypic" src={enemyimg} alt={`${enemyname} picture`} />
+          <progress className="enemy-progress" value={enemyhp} max={maxenemyhp} />
         </div>
-        <div>
+        <div className="enemystats">
           <p>{enemyname}</p>
           <p>
             <label>Hp: </label>
             {enemyhp}
           </p>
+
           <p>
             <label>Attack: </label>
             {enemyattack}
@@ -36,10 +39,11 @@ const Encounter = ({
           </p>
         </div>
       </div>
-      <div>
-        <img src={img} alt={`${name} picture`} />
+      <div className="playerpokepic">
+        <img className="playerpic" src={img} alt={`${name} picture`} />
+        <progress className="player-progress" value={hp} max={maxplayerhp} />
       </div>
-      <div>
+      <div className="playerstats">
         <label htmlFor="My pokemon"></label>
         <p>{name}</p>
         <p>

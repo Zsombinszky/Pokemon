@@ -3,8 +3,10 @@ import React from "react";
 const Buttons = ({ handleFlee, handleAttack }) => {
   return (
     <>
-      <button onClick={handleFlee}>Flee</button>
+    <div className="encounterbtndiv">
       <button onClick={handleAttack}>Attack</button>
+      <button onClick={handleFlee}>Flee</button>
+    </div>
     </>
   );
 };
