@@ -1,4 +1,4 @@
-import React from "react";
+
 
 const EnemyPokemon = ({ name, img, hp, attack, def }) => {
   return (

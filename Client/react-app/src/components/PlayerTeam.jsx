@@ -1,4 +1,4 @@
-import React from "react";
+
 
 const PlayerTeam = ({ name, img, hp, attack, def, handleSelectPokemon}) => {
   return (

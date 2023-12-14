@@ -1,4 +1,4 @@
-import React from "react";
+
 
 const Buttons = ({ handleFlee, handleAttack }) => {
   return (
