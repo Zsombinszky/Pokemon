@@ -1,12 +1,34 @@
+import React, { useEffect, useState } from "react";
 import Location from "./components/Location";
-import { useEffect } from "react";
-import { useState } from "react";
 import EnemyPokemon from "./components/EnemyPokemon";
 import PlayerTeam from "./components/PlayerTeam";
 import Encounter from "./components/Encounter";
 import Buttons from "./components/Buttons";
-import ButtonAnnouncer from "./components/ButtonAnnouncer";
+import BattleAnnouncer from "./components/BattleAnnouncer";
 import "./App.css";
+
+const useTypedMessage = (message) => {
+  const [typedMessage, setTypedMessage] = useState("");
+
+  useEffect(() => {
+    setTypedMessage("");
+
+    if (message.length) {
+      (async () => {
+        let visibleMessage = "";
+        for (let i = 0; i < message.length; i++) {
+          await wait(50);
+          visibleMessage = visibleMessage + message[i];
+          setTypedMessage(visibleMessage);
+        }
+      })();
+    }
+  }, [message]);
+
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  return typedMessage;
+};
 
 function App() {
   const [data, setData] = useState([]);
@@ -15,7 +37,11 @@ function App() {
   const [selectedPlayerPokemon, setSelectedPlayerPokemon] = useState(false);
   const [isPokemonSelected, setIsPokemonSelected] = useState(false);
   const [myHP, setMyHP] = useState(null);
-  const [wildHP, setWildHP] = useState(null)
+  const [wildHP, setWildHP] = useState(null);
+  const [announcerMessage, setAnnouncerMessage] = useState("");
+  const [announcerTypedMessage, setAnnouncerTypedMessage] = useState("");
+  const [maxplayerpokemonhp , setmaxplayerpokemonhp] = useState(null);
+  const [maxwildpokemonhp , setmaxwildpokemonhp] = useState(null);
 
   const usersPokemon = [
     "https://pokeapi.co/api/v2/pokemon/grookey",
@@ -29,7 +55,6 @@ function App() {
         const response = await fetch("https://pokeapi.co/api/v2/location");
         const jsonData = await response.json();
         setData(jsonData.results);
-        
 
         const fetchPromises = usersPokemon.map(async (pokemonUrl) => {
           const response1 = await fetch(pokemonUrl);
@@ -61,8 +86,9 @@ function App() {
       const pokemonResponse = await fetch(randomPokemon.url);
       const pokemonData = await pokemonResponse.json();
       setSelectedLocation(pokemonData);
-      console.log(pokemonData)
-      setWildHP(pokemonData.stats[0].base_stat)
+      console.log(pokemonData);
+      setWildHP(pokemonData.stats[0].base_stat);
+     /*  setmaxwildpokemonhp(pokemonData.stats[0].base_stat); */
     } catch (error) {
       console.error("Error fetching location data:", error);
     }
@@ -71,7 +97,7 @@ function App() {
   const handleFlee = () => {
     setSelectedLocation(null);
     setIsPokemonSelected(false);
-  }
+  };
 
   const handleAttack = () => {
     //((((2/5+2)*B*60/D)/50)+2)*Z/255 B attacker attack, D defending pokemon def
@@ -80,19 +106,34 @@ function App() {
     const myAttack = selectedPlayerPokemon.stats[1].base_stat;
     const wildDefense = selectedLocation.stats[2].base_stat;
     const wildHPLocal = wildHP;
-    
-    const myTurn = wildHPLocal - Math.abs(Math.floor(((((2 / 5 + 2) * myAttack * 60 / wildDefense) / 50) + 2) * randomNumber / 255));
+
+    const myTurn =
+      wildHPLocal -
+      Math.abs(
+        Math.floor(
+          ((((2 / 5 + 2) * myAttack * 60) / wildDefense / 50 + 2) *
+            randomNumber) /
+            255
+        )
+      );
 
     const wildAttack = selectedLocation.stats[1].base_stat;
     const myDefense = selectedPlayerPokemon.stats[2].base_stat;
     const myHPLocal = myHP;
 
-    const wildTurn = myHPLocal - Math.abs(Math.floor(((((2 / 5 + 2) * wildAttack * 60 / myDefense) / 50) + 2) * randomNumber / 255));
+    const wildTurn =
+      myHPLocal -
+      Math.abs(
+        Math.floor(
+          ((((2 / 5 + 2) * wildAttack * 60) / myDefense / 50 + 2) *
+            randomNumber) /
+            255
+        )
+      );
 
-    setMyHP(wildTurn)
-    setWildHP(myTurn)
-
-  }; 
+    setMyHP(wildTurn);
+    setWildHP(myTurn);
+  };
 
   const handleBackClick = () => {
     setSelectedLocation(null);
@@ -101,8 +142,11 @@ function App() {
   function handleSelectPokemon(pokemon) {
     setSelectedPlayerPokemon(pokemon);
     setIsPokemonSelected(true);
-    setMyHP(pokemon.stats[0].base_stat)
+    setMyHP(pokemon.stats[0].base_stat);
+    /* setmaxplayerpokemonhp(pokemon.stats[0].base_stat); */
   }
+
+  const typedMessage = useTypedMessage(announcerMessage);
 
   return (
     <div className="App">
@@ -115,18 +159,26 @@ function App() {
               enemyname={selectedLocation.name}
               enemyimg={selectedLocation.sprites.front_default}
               enemyhp={wildHP}
+              maxenemyhp={maxwildpokemonhp}
               enemyattack={selectedLocation.stats[1].base_stat}
               enemydef={selectedLocation.stats[2].base_stat}
               name={selectedPlayerPokemon.name}
               img={selectedPlayerPokemon.sprites.back_default}
               hp={myHP}
+              maxplayerhp={maxplayerpokemonhp}
               attack={selectedPlayerPokemon.stats[1].base_stat}
               def={selectedPlayerPokemon.stats[2].base_stat}
             />
-            <Buttons
-              handleFlee={handleFlee}
-              handleAttack={handleAttack}
-            />
+            <Buttons handleFlee={handleFlee} handleAttack={handleAttack} />
+            <div>
+              <BattleAnnouncer
+                message={
+                  announcerMessage ||
+                  `What will ${selectedPlayerPokemon.name} do?`
+                }
+                typedMessage={typedMessage}
+              />
+            </div>
           </>
         ) : (
           <>

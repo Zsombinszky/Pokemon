@@ -1,31 +1,26 @@
 .mypokemon {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    gap: 85px;
-    border: 4px solid black;
-    border-radius: 12px;
-  
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 85px;
+  border: 4px solid black;
+  border-radius: 12px;
 }
 
-.poke{
- 
-        border: 2px solid blue;
-        margin: 12px;
-        border-radius: 12px;
-        padding: 12px;
-        cursor: pointer;
-        background-color: white;
-        box-shadow: 4px 4px 4px black;
-        transition: transform 0.3s;    
+.poke {
+  border: 2px solid blue;
+  margin: 12px;
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  background-color: white;
+  box-shadow: 4px 4px 4px black;
+  transition: transform 0.3s;
 }
 
-
-
-.poke:hover{
-    
-   transform: scale(1.2);
-   box-shadow: 6px 6px 6px black;
+.poke:hover {
+  transform: scale(1.2);
+  box-shadow: 6px 6px 6px black;
 }
