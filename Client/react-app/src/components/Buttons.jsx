@@ -5,7 +5,7 @@ const Buttons = ({ handleFlee, handleAttack }) => {
     <>
     <div className="encounterbtndiv">
       <button onClick={handleAttack}>Attack</button>
-      <button onClick={handleFlee}>Flee</button>
+      <button className="backtocenter" onClick={handleFlee}>Flee</button>
     </div>
     </>
   );

@@ -91,7 +91,7 @@ function App() {
   
     fetchData();
   
-  }, []);
+  }, [ourTeam]);
 
   const handleLocationClick = async (locationKey) => {
     try {
@@ -170,6 +170,18 @@ const menuBackground = () =>{
       );
       setMyHP(wildTurn);
       setWildHP(myTurn);
+      const  pokecenter = document.querySelector('.backtocenter')
+      if(wildTurn <= 0){
+        setAnnouncerMessage(`Your Pokemon fainted and has to go back to the PokeCenter!`);
+        pokecenter.textContent = 'Back To PokeCenter'
+      }
+      else if (myTurn <= 0){
+        setAnnouncerMessage(`You succesfully catched the wild Pokemon!`);
+        pokecenter.textContent = 'Back To Locations'
+
+        const newList = [...ourTeam, `https://pokeapi.co/api/v2/pokemon/${selectedLocation.name}`]
+        setOurTeam(newList)
+      }
   };
 
   const handleBackClick = () => {
